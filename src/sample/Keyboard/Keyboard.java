@@ -6,7 +6,6 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,6 +16,7 @@ import javafx.stage.Window;
 class Keyboard extends VBox {
     private DoubleProperty fontSize = new SimpleDoubleProperty(Font.getDefault().getSize());
     private Window stage;
+    private Stage parentStage;
 
     String[] keyRows = {
             "1234567890",
@@ -25,44 +25,20 @@ class Keyboard extends VBox {
             "zxcvbnm"
     };
 
-    public Keyboard(Stage stage) {
+    public Keyboard(Stage stage, Stage parentStage) {
         this.stage = stage;
-
+        this.parentStage = parentStage;
         Slider fontSizeSlider = createSlider();
-        fontSizeProperty().bind(fontSizeSlider.valueProperty());
-        Label typedData = new Label();
-        lastKeyTextProperty().addListener((observable, oldText, newText) ->
-                        typedData.setText(typedData.getText() + newText)
-        );
-
-        getChildren().addAll(fontSizeSlider, typedData);
-        setPadding(new Insets(10));
-//        getChildren().setAll(
-//                createControls(), this);
-        initialiseStyling();
-        initialiseFontSize();
-        buildKeyboard();
-    }
-
-//    private Node createControls() {
-//        Slider fontSizeSlider = createSlider();
-//        fontSizeProperty().bind(fontSizeSlider.valueProperty());
-//
 //        Label typedData = new Label();
 //        lastKeyTextProperty().addListener((observable, oldText, newText) ->
 //                        typedData.setText(typedData.getText() + newText)
 //        );
-//
-//        VBox layout = new VBox(10);
-//        layout.getChildren().setAll(
-//                new Label("Keyboard Size"),
-//                fontSizeSlider,
-//                typedData
-//        );
-//        layout.setMinSize(VBox.USE_PREF_SIZE, VBox.USE_PREF_SIZE);
-//
-//        return layout;
-//    }
+
+        getChildren().addAll(fontSizeSlider/*, typedData*/);
+        initialiseStyling();
+        initialiseFontSize();
+        buildKeyboard();
+    }
 
     private void buildKeyboard() {
         for (String row: keyRows) {
@@ -76,6 +52,7 @@ class Keyboard extends VBox {
         fontSizeSlider.setShowTickMarks(true);
         fontSizeSlider.setMajorTickUnit(2);
         fontSizeSlider.setMinorTickCount(0);
+        fontSizeProperty().bind(fontSizeSlider.valueProperty());
         return fontSizeSlider;
     }
     private HBox createKeyRow(String row) {
@@ -90,17 +67,6 @@ class Keyboard extends VBox {
         return keyRow;
     }
 
-    //    private VBox layoutWith(Keyboard keyboard) {
-//        VBox layout = new VBox(20);
-////        layout.setPadding(new Insets(10));
-////        layout.getChildren().setAll(
-////                createControls(keyboard),
-////                keyboard
-////        );
-//        return layout;
-//    }
-
-
     private void addToKeyboard(HBox keyRow) {
         getChildren().add(keyRow);
     }
@@ -113,21 +79,18 @@ class Keyboard extends VBox {
     }
 
     private void initialiseStyling() {
+        setPadding(new Insets(10));
+//        setTranslateX();
+        stage.setY(parentStage.getY() + parentStage.getHeight());
+        stage.setX(parentStage.getX());
+
         setAlignment(Pos.BOTTOM_CENTER);
         setMinSize(VBox.USE_PREF_SIZE, VBox.USE_PREF_SIZE);
         getStyleClass().add("keyboard");
     }
 
-    public double getFontSize() {
-        return fontSize.get();
-    }
-
     public DoubleProperty fontSizeProperty() {
         return fontSize;
-    }
-
-    public void setFontSize(double fontSize) {
-        this.fontSize.set(fontSize);
     }
 
     private ReadOnlyStringWrapper lastKeyText = new ReadOnlyStringWrapper();
@@ -142,7 +105,7 @@ class Keyboard extends VBox {
 
     private void onFontSizeChange(Number newValue) {
         setStyle("-fx-font-size: " + newValue + "px;");
-        this.stage.sizeToScene();
+        stage.sizeToScene();
     }
 
 }

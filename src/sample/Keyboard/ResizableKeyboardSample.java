@@ -10,49 +10,55 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class ResizableKeyboardSample extends Application {
-    private boolean keyboardNotShown;
+    private boolean keyboardNotShown = true;
+    private Keyboard keyboard;
+    private Stage keyboardPopupWindow;
 
     public static void main(String[] args) throws Exception {
         launch(args);
     }
 
-    public void start(final Stage stage) throws Exception {
-        keyboardNotShown = true; //does it make a difference?
+    public void start(final Stage primaryStage) throws Exception {
+        Button showKeyboardButton = createKeyboardButton(keyboardPopupWindow, primaryStage);
+        VBox rootBox = createRootBox(showKeyboardButton); //dont like this
 
+        primaryStage.setScene(new Scene(rootBox));
+        primaryStage.sizeToScene();
+        primaryStage.show();
+    }
+
+    private VBox createRootBox(Button showKeyboardButton) {
         VBox rootBox = new VBox(5);
         rootBox.setPadding(new Insets(10));
-
         TextField textField1 = new TextField();
         TextField textField2 = new TextField();
-        Keyboard popupKeyboard = new Keyboard(stage);
+        rootBox.getChildren().addAll(textField1, textField2, showKeyboardButton);
+        return rootBox;
+    }
 
+    private Stage createPopupWindow(Stage primaryStage) {
         Stage keyboardPopupWindow = new Stage();
         keyboardPopupWindow.initModality(Modality.NONE);
-        keyboardPopupWindow.initOwner(stage);
+        keyboardPopupWindow.initOwner(primaryStage);
+        Keyboard popupKeyboard = new Keyboard(keyboardPopupWindow, primaryStage);
         Scene keyboardScene = new Scene(popupKeyboard);
         style(keyboardScene);
         keyboardPopupWindow.setScene(keyboardScene);
+        return keyboardPopupWindow;
+    }
 
+    private Button createKeyboardButton(Stage keyboardPopupWindow, Stage primaryStage) {
         Button showKeyboardButton = new Button("Popup Keyboard");
         showKeyboardButton.setOnAction(event -> {
-            if(keyboardNotShown) {
-                keyboardPopupWindow.show();
+            if (keyboardNotShown) {
+                ResizableKeyboardSample.this.keyboardPopupWindow = createPopupWindow(primaryStage);
+                ResizableKeyboardSample.this.keyboardPopupWindow.show();
             } else {
-                keyboardPopupWindow.close();
+                ResizableKeyboardSample.this.keyboardPopupWindow.close();
             }
             keyboardNotShown = !keyboardNotShown;
         });
-
-        rootBox.getChildren().addAll(textField1, textField2, showKeyboardButton);
-
-        Scene scene = new Scene(rootBox);
-        displayScene(stage, scene);
-    }
-
-    private void displayScene(Stage stage, Scene scene) {
-        stage.setScene(scene);
-        stage.sizeToScene();
-        stage.show();
+        return showKeyboardButton;
     }
 
     private void style(Scene scene) {
