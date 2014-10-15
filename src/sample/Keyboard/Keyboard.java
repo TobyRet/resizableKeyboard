@@ -121,11 +121,11 @@ class Keyboard extends VBox {
 
     public void deleteOneCharacter() {
         if (typedData.getText().length()>0) {
-            typedData.setText(getSubstring(typedData));
+            typedData.setText(removeLastCharacter(typedData));
         }
     }
 
-    private String getSubstring(Label data) {
+    private String removeLastCharacter(Label data) {
         return data.getText().substring(0, data.getText().length()-1);
     }
 }
