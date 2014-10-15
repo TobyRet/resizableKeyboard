@@ -1,15 +1,21 @@
 package sample.Keyboard;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
 class Keyboard extends VBox {
@@ -18,7 +24,7 @@ class Keyboard extends VBox {
     private DoubleProperty fontSize = new SimpleDoubleProperty(Font.getDefault().getSize());
     private Window stage;
     private Stage parentStage;
-    private Label typedData;
+    private TextField targetTextField;
 
     String[] keyRows = {
             "1234567890"+BACKSPACE_UNICODE,
@@ -28,16 +34,23 @@ class Keyboard extends VBox {
     };
 
     public Keyboard(Stage stage, Stage parentStage) {
+        this(stage, parentStage, null);
+    }
+
+    public Keyboard(Stage stage, Stage parentStage, TextField targetTextField) {
         this.stage = stage;
         this.parentStage = parentStage;
-        typedData = new Label();
+        if (targetTextField == null) {
+            this.targetTextField = (TextField) parentStage.getScene().getFocusOwner();
+        } else {
+            this.targetTextField = targetTextField;
+        }
+
+        stage.initStyle(StageStyle.UNDECORATED);
         Slider fontSizeSlider = createSlider();
-//        lastKeyTextProperty().addListener((observable, oldText, newText) -> {
-//                    typedData.setText(typedData.getText() + newText);
-//
-//                }
-//        );
-        getChildren().addAll(fontSizeSlider, typedData);
+
+        getChildren().addAll(fontSizeSlider);
+
         initialiseStyling();
         initialiseFontSize();
         buildKeyboard();
@@ -99,16 +112,6 @@ class Keyboard extends VBox {
     public DoubleProperty fontSizeProperty() {
         return fontSize;
     }
-//
-//    private ReadOnlyStringWrapper lastKeyText = new ReadOnlyStringWrapper();
-//
-//    public ReadOnlyStringWrapper getLastKeyText() {
-//        return lastKeyText;
-//    }
-//
-//    public ReadOnlyStringProperty lastKeyTextProperty() {
-//        return lastKeyText.getReadOnlyProperty();
-//    }
 
     private void onFontSizeChange(Number newValue) {
         setStyle("-fx-font-size: " + newValue + "px;");
@@ -116,16 +119,20 @@ class Keyboard extends VBox {
     }
 
     public void appendText(String text) {
-        typedData.setText(typedData.getText() + text);
+        targetTextField.setText(targetTextField.getText() + text);
     }
 
     public void deleteOneCharacter() {
-        if (typedData.getText().length()>0) {
-            typedData.setText(removeLastCharacter(typedData));
+        if (targetTextField.getText().length()>0) {
+            targetTextField.setText(removeLastCharacter(targetTextField));
         }
     }
 
-    private String removeLastCharacter(Label data) {
+    private String removeLastCharacter(TextField data) {
         return data.getText().substring(0, data.getText().length()-1);
+    }
+
+    public void setTarget(TextField newTarget) {
+        this.targetTextField = newTarget;
     }
 }
