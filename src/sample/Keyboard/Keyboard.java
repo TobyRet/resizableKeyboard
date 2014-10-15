@@ -1,16 +1,11 @@
 package sample.Keyboard;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -25,12 +20,13 @@ class Keyboard extends VBox {
     private Window stage;
     private Stage parentStage;
     private TextField targetTextField;
+    private boolean shiftButtonPressed = false;
 
     String[] keyRows = {
             "1234567890"+BACKSPACE_UNICODE,
             "qwertyuiop",
             "asdfghjkl",
-            "zxcvbnm"
+            SHIFT_UNICODE + "zxcvbnm"
     };
 
     public Keyboard(Stage stage, Stage parentStage) {
@@ -80,6 +76,9 @@ class Keyboard extends VBox {
             if(Character.toString(c).equals(BACKSPACE_UNICODE)) {
                 BackspaceButton backspaceButton = new BackspaceButton(this, Character.toString(c));
                 keyRow.getChildren().add(backspaceButton);
+            } else if(Character.toString(c).equals(SHIFT_UNICODE)){
+                ShiftButton shiftButton = new ShiftButton(this, Character.toString(c));
+                keyRow.getChildren().add(shiftButton);
             } else {
                 KeyButton key = new KeyButton(this, Character.toString(c));
                 keyRow.getChildren().add(key);
@@ -119,7 +118,11 @@ class Keyboard extends VBox {
     }
 
     public void appendText(String text) {
-        targetTextField.setText(targetTextField.getText() + text);
+        if(shiftButtonPressed) {
+            targetTextField.setText(targetTextField.getText() + text.toUpperCase());
+        } else {
+            targetTextField.setText(targetTextField.getText() + text);
+        }
     }
 
     public void deleteOneCharacter() {
@@ -134,5 +137,13 @@ class Keyboard extends VBox {
 
     public void setTarget(TextField newTarget) {
         this.targetTextField = newTarget;
+    }
+
+    public void setCapitalisedCharacter() {
+        shiftButtonPressed = !shiftButtonPressed;
+    }
+
+    public boolean shiftIsPressed() {
+        return shiftButtonPressed == true;
     }
 }
