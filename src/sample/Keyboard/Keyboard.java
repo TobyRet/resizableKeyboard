@@ -6,6 +6,7 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,6 +18,7 @@ class Keyboard extends VBox {
     private DoubleProperty fontSize = new SimpleDoubleProperty(Font.getDefault().getSize());
     private Window stage;
     private Stage parentStage;
+    private Label typedData;
 
     String[] keyRows = {
             "1234567890",
@@ -28,13 +30,14 @@ class Keyboard extends VBox {
     public Keyboard(Stage stage, Stage parentStage) {
         this.stage = stage;
         this.parentStage = parentStage;
+        typedData = new Label();
         Slider fontSizeSlider = createSlider();
-//        Label typedData = new Label();
-//        lastKeyTextProperty().addListener((observable, oldText, newText) ->
-//                        typedData.setText(typedData.getText() + newText)
+//        lastKeyTextProperty().addListener((observable, oldText, newText) -> {
+//                    typedData.setText(typedData.getText() + newText);
+//
+//                }
 //        );
-
-        getChildren().addAll(fontSizeSlider/*, typedData*/);
+        getChildren().addAll(fontSizeSlider, typedData);
         initialiseStyling();
         initialiseFontSize();
         buildKeyboard();
@@ -80,7 +83,6 @@ class Keyboard extends VBox {
 
     private void initialiseStyling() {
         setPadding(new Insets(10));
-//        setTranslateX();
         stage.setY(parentStage.getY() + parentStage.getHeight());
         stage.setX(parentStage.getX());
 
@@ -92,20 +94,23 @@ class Keyboard extends VBox {
     public DoubleProperty fontSizeProperty() {
         return fontSize;
     }
-
-    private ReadOnlyStringWrapper lastKeyText = new ReadOnlyStringWrapper();
-
-    public ReadOnlyStringWrapper getLastKeyText() {
-        return lastKeyText;
-    }
-
-    public ReadOnlyStringProperty lastKeyTextProperty() {
-        return lastKeyText.getReadOnlyProperty();
-    }
+//
+//    private ReadOnlyStringWrapper lastKeyText = new ReadOnlyStringWrapper();
+//
+//    public ReadOnlyStringWrapper getLastKeyText() {
+//        return lastKeyText;
+//    }
+//
+//    public ReadOnlyStringProperty lastKeyTextProperty() {
+//        return lastKeyText.getReadOnlyProperty();
+//    }
 
     private void onFontSizeChange(Number newValue) {
         setStyle("-fx-font-size: " + newValue + "px;");
         stage.sizeToScene();
     }
 
+    public void appendText(String text) {
+        typedData.setText(typedData.getText() + text);
+    }
 }

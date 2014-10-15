@@ -13,6 +13,6 @@ class KeyButton extends Button {
         setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
         setMaxSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 
-        setOnAction(event -> keyboard.getLastKeyText().set(text));
+        setOnAction(event -> keyboard.appendText(text));
     }
 }
