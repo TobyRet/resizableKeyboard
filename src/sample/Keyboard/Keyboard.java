@@ -1,8 +1,6 @@
 package sample.Keyboard;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,13 +13,15 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 class Keyboard extends VBox {
+    private static final String BACKSPACE_UNICODE = "\u2190";
+    private static final String SHIFT_UNICODE = "\u21E7";
     private DoubleProperty fontSize = new SimpleDoubleProperty(Font.getDefault().getSize());
     private Window stage;
     private Stage parentStage;
     private Label typedData;
 
     String[] keyRows = {
-            "1234567890",
+            "1234567890"+BACKSPACE_UNICODE,
             "qwertyuiop",
             "asdfghjkl",
             "zxcvbnm"
@@ -64,8 +64,13 @@ class Keyboard extends VBox {
         keyRow.setAlignment(Pos.CENTER);
 
         for (char c: row.toCharArray()) {
-            KeyButton key = new KeyButton(this, Character.toString(c));
-            keyRow.getChildren().add(key);
+            if(Character.toString(c).equals(BACKSPACE_UNICODE)) {
+                BackspaceButton backspaceButton = new BackspaceButton(this, Character.toString(c));
+                keyRow.getChildren().add(backspaceButton);
+            } else {
+                KeyButton key = new KeyButton(this, Character.toString(c));
+                keyRow.getChildren().add(key);
+            }
         }
         return keyRow;
     }
@@ -112,5 +117,15 @@ class Keyboard extends VBox {
 
     public void appendText(String text) {
         typedData.setText(typedData.getText() + text);
+    }
+
+    public void deleteOneCharacter() {
+        if (typedData.getText().length()>0) {
+            typedData.setText(getSubstring(typedData));
+        }
+    }
+
+    private String getSubstring(Label data) {
+        return data.getText().substring(0, data.getText().length()-1);
     }
 }

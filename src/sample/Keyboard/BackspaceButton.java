@@ -2,10 +2,11 @@ package sample.Keyboard;
 
 import javafx.scene.control.Button;
 
-class KeyButton extends Button {
+public class BackspaceButton extends Button {
+
     private Keyboard keyboard;
 
-    public KeyButton(Keyboard keyboard, String text) {
+    public BackspaceButton(Keyboard keyboard, String text) {
         super(text);
         this.keyboard = keyboard;
         getStyleClass().add("key");
@@ -13,7 +14,8 @@ class KeyButton extends Button {
         setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
         setMaxSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 
-        setOnAction(event -> keyboard.appendText(text));
+        setOnAction(event -> keyboard.deleteOneCharacter());
     }
+
 
 }
